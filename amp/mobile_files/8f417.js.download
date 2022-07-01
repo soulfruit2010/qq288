@@ -1,0 +1,4 @@
+jQuery(()=>{const $=jQuery;const forms=document.querySelectorAll('form');const exclude=['convert-to-amp'];if(document.referrer&&document.referrer.indexOf('https://ampify.io')==-1){localStorage.setItem('a-source',document.referrer);}
+for(const form of forms){form.addEventListener('submit',()=>{if(exclude.includes(form.name)){return;}
+const json={};const data=$(form).serializeArray();data.push({name:'__time',value:new Date().toGMTString()});data.push({name:'__url',value:location.href});data.push({name:'__ref',value:localStorage.getItem('a-source')});data.push({name:'__useragent',value:navigator.userAgent});for(const{name,value}of data){json[name]=value;}
+$.ajax('/wp-json/contact-form-7/v1/contact-forms/616/feedback',{'data':{'_wpcf7':'616','_wpcf7_version':'5.1.7','_wpcf7_locale':'en_US','_wpcf7_unit_tag':'wpcf7-f616-p690-o1','_wpcf7_container_post':'690','json-data':JSON.stringify(json)},'type':'POST'});});}});

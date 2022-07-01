@@ -1,0 +1,8 @@
+let auth2;window.initGoogleAuth2=()=>{const{client_id}=window.accountConfig;gapi.load('auth2',()=>{auth2=gapi.auth2.init({client_id});});}
+const initAccount=({convert}={})=>{const{api,dashboard}=window.accountConfig;const consoleLogin=({token})=>{const autoRedirect=setTimeout(()=>{location.href=dashboard;},3000);window.addEventListener('message',(message)=>{if(message.data&&message.data.token){clearTimeout(autoRedirect);location.href=dashboard;}},false);const iframe=document.createElement('iframe');iframe.style.setProperty('display','none');iframe.src=dashboard+'/console/token.html?token='+token;document.body.appendChild(iframe);}
+const authAccount=async(data)=>{const req=await fetch(api+'/authenticate',{'method':'POST','headers':{'content-type':'application/json'},'body':JSON.stringify(data)});const res=await req.json();const{auth,token,isNewAccount}=res;if(req.status===200&&auth){dataLayer.push({'event':isNewAccount?'sign_up':'login'});consoleLogin({token});}else{throw'Auth Fail';}}
+async function openLogin(){const btn=this;const error=document.querySelector('#auth-error');btn.disabled=true;try{const GoogleUser=await auth2.signIn();const ref=localStorage.getItem('a-source');const{id_token:idToken}=GoogleUser.getAuthResponse();await authAccount({idToken,convert:window.lastConvert||convert,ref});}catch(e){if(e.error!=='popup_closed_by_user'){error.removeAttribute('hidden');}
+btn.disabled=false;console.error(e);}}
+const init=()=>{jQuery(document).on('click','.ampify-account',openLogin);}
+init();}
+initAccount();
